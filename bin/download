@@ -8,13 +8,44 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
+platform=
+kernel="$(uname -s)"
+case "$kernel" in
+    Linux)
+        platform="linux"
+        ;;
+    Darwin)
+        platform="macos"
+        ;;
+    *)
+        echo "Don't know how to turn $kernel into a platform name"
+        exit 1
+        ;;
+esac
+
+if [[ "$platform" == "linux" ]]; then
+    arch="$(uname -m)"
+    case "$arch" in
+        x86_64)
+            platform="$platform-amd64"
+            ;;
+        aarch64)
+            platform="$platform-arm64"
+            ;;
+        *)
+            echo "Don't know how to turn '$arch' into 'amd64' or 'arm64'"
+            exit 1
+            ;;
+    esac
+fi
+
 mkdir -p "$ASDF_DOWNLOAD_PATH"
 
 # TODO: Adapt this to proper extension and adapt extracting strategy.
-release_file="$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$ASDF_INSTALL_VERSION.tar.gz"
+release_file="$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$ASDF_INSTALL_VERSION-$platform.tar.gz"
 
 # Download tar.gz file to the download directory
-download_release "$ASDF_INSTALL_VERSION" "$release_file"
+download_release "$ASDF_INSTALL_VERSION" "$platform" "$release_file"
 
 #  Extract contents of tar.gz file into the download directory
 tar -xzf "$release_file" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $release_file"
