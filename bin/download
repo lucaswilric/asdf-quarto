@@ -11,32 +11,32 @@ source "${plugin_dir}/lib/utils.bash"
 platform=
 kernel="$(uname -s)"
 case "$kernel" in
-    Linux)
-        platform="linux"
-        ;;
-    Darwin)
-        platform="macos"
-        ;;
-    *)
-        echo "Don't know how to turn $kernel into a platform name"
-        exit 1
-        ;;
+Linux)
+	platform="linux"
+	;;
+Darwin)
+	platform="macos"
+	;;
+*)
+	echo "Don't know how to turn $kernel into a platform name"
+	exit 1
+	;;
 esac
 
 if [[ "$platform" == "linux" ]]; then
-    arch="$(uname -m)"
-    case "$arch" in
-        x86_64)
-            platform="$platform-amd64"
-            ;;
-        aarch64)
-            platform="$platform-arm64"
-            ;;
-        *)
-            echo "Don't know how to turn '$arch' into 'amd64' or 'arm64'"
-            exit 1
-            ;;
-    esac
+	arch="$(uname -m)"
+	case "$arch" in
+	x86_64)
+		platform="$platform-amd64"
+		;;
+	aarch64)
+		platform="$platform-arm64"
+		;;
+	*)
+		echo "Don't know how to turn '$arch' into 'amd64' or 'arm64'"
+		exit 1
+		;;
+	esac
 fi
 
 mkdir -p "$ASDF_DOWNLOAD_PATH"
